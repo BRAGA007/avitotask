@@ -12,7 +12,7 @@ import (
 )
 
 func Database(DB_URL string) *gorm.DB {
-	//open a db connection
+	//open a database connection
 	db, err := gorm.Open("mysql", DB_URL)
 	if err != nil {
 		panic("failed to connect database")
@@ -32,10 +32,14 @@ func main() {
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/api/v1"
-	viper.SetConfigFile("./pkg/common/envs/.env")
+	viper.SetConfigFile(".env")
 	viper.ReadInConfig()
 
-	DB_URL := viper.Get("DB_URL").(string)
+	DB_USER := viper.Get("DB_USER").(string)
+	DB_NAME := viper.Get("DB_NAME").(string)
+	DB_PASSWORD := viper.Get("DB_PASSWORD").(string)
+	DB_PORT := viper.Get("DB_PORT").(string)
+	DB_URL := DB_USER + ":" + DB_PASSWORD + "@tcp(127.0.0.1:" + DB_PORT + ")/" + DB_NAME
 	fmt.Println(DB_URL)
 	db := Database(DB_URL)
 	db.AutoMigrate(&models.User{}, &models.Transaction{}, &models.Reservation{}, &models.Revenue{})
