@@ -16,8 +16,9 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 
 	routes := r.Group("/balances")
 	//routes.POST("/", h.AddUser)
-	//routes.GET("/", h.GetUsers)
-	routes.GET("/", h.GetUser)
+	routes.POST("/res", h.GetRevenueStatement)
+	routes.POST("/", h.GetUser)
+	routes.POST("/history", h.GetHistoryBalance)
 	routes.POST("/withdraw", h.WithDrawBalance)
 	routes.POST("/deposit", h.DepositBalance)
 	routes.POST("/transfer", h.Transfer)

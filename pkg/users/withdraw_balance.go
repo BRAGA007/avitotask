@@ -35,7 +35,7 @@ func (h handler) WithDrawBalance(c *gin.Context) {
 
 			user.Balance -= body.Withdrawal
 			transaction.User_id = body.Id
-			transaction.Desciption = "Вывод средств на сумму: " + strconv.Itoa(body.Withdrawal) + " копеек"
+			transaction.Description = "Вывод средств на сумму: " + strconv.Itoa(body.Withdrawal) + " копеек"
 		} else {
 			c.JSON(http.StatusBadRequest, "Недостаточно средств для вывода")
 			return

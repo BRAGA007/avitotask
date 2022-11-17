@@ -59,11 +59,11 @@ func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
 								h.DB.Save(&user)
 								reservation.Status = "Заказ подтвержден"
 								transaction.User_id = reservation.User_Id
-								transaction.Desciption = "Подтверждение заказа: " + strconv.Itoa(int(reservation.Order_Id)) + " на сумму " + strconv.Itoa(reservation.Cost) + " копеек"
+								transaction.Description = "Подтверждение заказа: " + strconv.Itoa(int(reservation.Order_Id)) + " на сумму " + strconv.Itoa(reservation.Cost) + " копеек"
 								h.DB.Save(&transaction)
 								revenue.User_Id = reservation.User_Id
 								revenue.Service_Id = reservation.Service_Id
-								revenue.Sum = reservation.Cost
+								revenue.Amount = reservation.Cost
 								revenue.Order_Id = reservation.Order_Id
 								h.DB.Save(&revenue)
 							} else {

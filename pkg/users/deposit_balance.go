@@ -31,7 +31,8 @@ func (h handler) DepositBalance(c *gin.Context) {
 			user.Balance = body.Deposit
 			user.ID = body.Id
 			transaction.User_id = body.Id
-			transaction.Desciption = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
+			transaction.Description = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
+
 			fmt.Println(body.Deposit)
 		} else {
 			c.JSON(http.StatusBadRequest, "Введите ID больше 0")
@@ -40,7 +41,7 @@ func (h handler) DepositBalance(c *gin.Context) {
 	} else {
 		user.Balance += body.Deposit
 		transaction.User_id = body.Id
-		transaction.Desciption = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
+		transaction.Description = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
 		fmt.Println(body.Deposit)
 	}
 	h.DB.Save(&user)

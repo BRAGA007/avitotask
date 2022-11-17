@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-type GetBalanceRequest struct {
+type GetBalanceBodyRequest struct {
 	ID int `json:"user_id"`
 }
 
 func (h handler) GetUser(c *gin.Context) {
-	body := GetBalanceRequest{}
+	body := GetBalanceBodyRequest{}
 
 	if err := c.BindJSON(&body); err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
