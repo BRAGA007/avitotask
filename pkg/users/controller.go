@@ -18,7 +18,8 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	//routes.POST("/", h.AddUser)
 	//routes.GET("/", h.GetUsers)
 	routes.GET("/", h.GetUser)
-	routes.POST("/", h.DepositBalance)
+	routes.POST("/withdraw", h.WithDrawBalance)
+	routes.POST("/deposit", h.DepositBalance)
 	routes.POST("/transfer", h.Transfer)
 	routes.POST("/reserve", h.ReserveBalanceAndRevenueRecognition)
 }
