@@ -9,8 +9,8 @@ import (
 )
 
 type DepositBalanceRequestBody struct {
-	Id      uint `json:"user_id"`
-	Deposit int  `json:"deposit"`
+	Id      int `json:"user_id"`
+	Deposit int `json:"deposit"`
 }
 
 func (h handler) DepositBalance(c *gin.Context) {
@@ -27,12 +27,16 @@ func (h handler) DepositBalance(c *gin.Context) {
 	var transaction models.Transaction
 
 	if result := h.DB.First(&user, body.Id); result.Error != nil {
-		user.Balance = body.Deposit
-		user.ID = body.Id
-		transaction.User_id = body.Id
-		transaction.Desciption = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
-		fmt.Println(body.Deposit)
-
+		if body.Id > 0 {
+			user.Balance = body.Deposit
+			user.ID = body.Id
+			transaction.User_id = body.Id
+			transaction.Desciption = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
+			fmt.Println(body.Deposit)
+		} else {
+			c.JSON(http.StatusBadRequest, "Введите ID больше 0")
+			return
+		}
 	} else {
 		user.Balance += body.Deposit
 		transaction.User_id = body.Id

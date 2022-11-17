@@ -7,7 +7,7 @@ import (
 )
 
 type GetBalanceRequest struct {
-	ID int `json:"id"`
+	ID int `json:"user_id"`
 }
 
 func (h handler) GetUser(c *gin.Context) {
@@ -23,7 +23,7 @@ func (h handler) GetUser(c *gin.Context) {
 
 	if result := h.DB.First(&user, body.ID); result.Error != nil {
 		c.AbortWithError(http.StatusBadRequest, result.Error)
-		c.JSON(http.StatusBadRequest, "Пользователя с данным ID не существует")
+		c.JSON(http.StatusBadRequest, "У пользователя с данным ID отсутствует баланс")
 		return
 	}
 

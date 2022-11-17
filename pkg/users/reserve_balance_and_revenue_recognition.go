@@ -2,16 +2,17 @@ package users
 
 import (
 	"avitotask/pkg/common/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
 type ReserveBalanceAndRevenueRecognitionRequestBody struct {
-	User_Id    uint `json:"user_id"`
-	Service_Id uint `json:"service_id"`
-	Order_Id   uint `json:"order_id"`
-	Cost       int  `json:"cost"`
+	User_Id    int `json:"user_id"`
+	Service_Id int `json:"service_id"`
+	Order_Id   int `json:"order_id"`
+	Cost       int `json:"cost"`
 }
 
 func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
@@ -23,6 +24,7 @@ func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	fmt.Println(body.Order_Id)
 
 	var user models.User
 	var transaction models.Transaction
@@ -31,13 +33,20 @@ func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
 	if result := h.DB.First(&user, body.User_Id); result.Error != nil {
 		c.AbortWithError(http.StatusBadRequest, result.Error)
 		c.JSON(http.StatusBadRequest, "У заказчика с таким ID отсутствует баланс")
+		return
 	} else {
 		if result := h.DB.First(&reservation, body.Order_Id); result.Error != nil {
-			reservation.User_Id = body.User_Id
-			reservation.Service_Id = body.Service_Id
-			reservation.Order_Id = body.Order_Id
-			reservation.Cost = body.Cost
-			reservation.Status = "Заказ не подтвержден"
+			if body.Cost > 0 && body.Service_Id > 0 && body.Order_Id > 0 {
+
+				reservation.User_Id = body.User_Id
+				reservation.Service_Id = body.Service_Id
+				reservation.Order_Id = body.Order_Id
+				reservation.Cost = body.Cost
+				reservation.Status = "Заказ не подтвержден"
+			} else {
+				c.JSON(http.StatusBadRequest, "Сумма покупки, ID услуги, ID заказа не могут быть меньше либо равны нулю")
+				return
+			}
 
 		} else {
 

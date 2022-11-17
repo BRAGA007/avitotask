@@ -3,15 +3,17 @@ package main
 import (
 	"avitotask/pkg/common/models"
 	"avitotask/pkg/users"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func Database() *gorm.DB {
+func Database(DB_URL string) *gorm.DB {
 	//open a db connection
-	db, err := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/sys?parseTime=true")
+	db, err := gorm.Open("mysql", DB_URL)
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -19,8 +21,12 @@ func Database() *gorm.DB {
 }
 
 func main() {
+	viper.SetConfigFile("./pkg/common/envs/.env")
+	viper.ReadInConfig()
 
-	db := Database()
+	DB_URL := viper.Get("DB_URL").(string)
+	fmt.Println(DB_URL)
+	db := Database(DB_URL)
 	db.AutoMigrate(&models.User{}, &models.Transaction{}, &models.Reservation{}, &models.Revenue{})
 	router := gin.Default()
 

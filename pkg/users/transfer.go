@@ -8,9 +8,9 @@ import (
 )
 
 type TransferRequestBody struct {
-	Id_From  uint `json:"id_from"`
-	Id_To    uint `json:"id_to"`
-	Transfer int  `json:"transfer"`
+	Id_From  int `json:"id_from"`
+	Id_To    int `json:"id_to"`
+	Transfer int `json:"transfer"`
 }
 
 func (h handler) Transfer(c *gin.Context) {
@@ -30,31 +30,37 @@ func (h handler) Transfer(c *gin.Context) {
 
 	if resultto := h.DB.First(&userto, body.Id_To); resultto.Error != nil {
 		c.AbortWithError(http.StatusBadRequest, resultto.Error)
-		c.JSON(http.StatusBadRequest, "Пользователя получателся с таким ID не существует")
+		c.JSON(http.StatusBadRequest, "Ошибка ввода данных")
 		return
 
 	}
 	if resultfrom := h.DB.First(&userfrom, body.Id_From); resultfrom.Error != nil {
 		c.AbortWithError(http.StatusBadRequest, resultfrom.Error)
-		c.JSON(http.StatusBadRequest, "Пользователя отправителя с таким ID не существует")
+		c.JSON(http.StatusBadRequest, "Ошибка ввода данных")
 		return
 
 	}
 	if userfrom.Balance >= body.Transfer {
-		userto.Balance += body.Transfer
-		userfrom.Balance -= body.Transfer
-		transactionfrom.User_id = body.Id_From
-		transactionfrom.Desciption = "Отправлено: " + strconv.Itoa(body.Transfer) + " копеек " + "пользователю с ID " + strconv.Itoa(int(body.Id_To))
-		transactionto.User_id = body.Id_To
-		transactionto.Desciption = "Получение: " + strconv.Itoa(body.Transfer) + " копеек " + "от пользователя с ID " + strconv.Itoa(int(body.Id_From))
-		h.DB.Save(&userto)
-		h.DB.Save(&userfrom)
-		c.JSON(http.StatusOK, &userto)
-		c.JSON(http.StatusOK, &userfrom)
+		if body.Transfer > 0 {
+			userto.Balance += body.Transfer
+			userfrom.Balance -= body.Transfer
+			transactionfrom.User_id = body.Id_From
+			transactionfrom.Desciption = "Отправлено: " + strconv.Itoa(body.Transfer) + " копеек " + "пользователю с ID " + strconv.Itoa(int(body.Id_To))
+			transactionto.User_id = body.Id_To
+			transactionto.Desciption = "Получение: " + strconv.Itoa(body.Transfer) + " копеек " + "от пользователя с ID " + strconv.Itoa(int(body.Id_From))
+			h.DB.Save(&userto)
+			h.DB.Save(&userfrom)
+			c.JSON(http.StatusOK, &userto)
+			c.JSON(http.StatusOK, &userfrom)
 
-		h.DB.Save(&transactionto)
-		h.DB.Save(&transactionfrom)
+			h.DB.Save(&transactionto)
+			h.DB.Save(&transactionfrom)
+		} else {
+			c.JSON(http.StatusBadRequest, "Сумма перевода не может быть меньши либо равна нулю")
+		}
+
 	} else {
 		c.JSON(http.StatusBadRequest, "Сумма перевода превышает баланс пользователя отправителя")
+		return
 	}
 }

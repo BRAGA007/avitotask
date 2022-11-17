@@ -8,8 +8,8 @@ import (
 )
 
 type WithDrawBalanceRequestBody struct {
-	Id         uint `json:"user_id"`
-	Withdrawal int  `json:"withdrawal"`
+	Id         int `json:"user_id"`
+	Withdrawal int `json:"withdrawal"`
 }
 
 func (h handler) WithDrawBalance(c *gin.Context) {
@@ -27,13 +27,20 @@ func (h handler) WithDrawBalance(c *gin.Context) {
 
 	if result := h.DB.First(&user, body.Id); result.Error != nil {
 		c.AbortWithError(http.StatusBadRequest, result.Error)
-		c.JSON(http.StatusBadRequest, "У данного пользователя отсутствет баланс")
+		c.JSON(http.StatusBadRequest, "Ошибка ввода данных")
 		return
 
 	} else {
-		user.Balance -= body.Withdrawal
-		transaction.User_id = body.Id
-		transaction.Desciption = "Вывод средств на сумму: " + strconv.Itoa(body.Withdrawal) + " копеек"
+		if user.Balance >= body.Withdrawal {
+
+			user.Balance -= body.Withdrawal
+			transaction.User_id = body.Id
+			transaction.Desciption = "Вывод средств на сумму: " + strconv.Itoa(body.Withdrawal) + " копеек"
+		} else {
+			c.JSON(http.StatusBadRequest, "Недостаточно средств для вывода")
+			return
+		}
+
 	}
 	h.DB.Save(&user)
 	h.DB.Save(&transaction)
