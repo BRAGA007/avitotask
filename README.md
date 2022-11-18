@@ -1,10 +1,10 @@
 # avitotask
 Все данные денег поступают в значении int и были приняты мною за копейки, так как это самый безопасный способ хранить деньги в базе данных.
 Изначально поступает таблица. 
+Для того чтобы установить проект необходимо написать в консоли "git clone https://github.com/BRAGA007/avitotask"
 Создадим Userов c id 1 и id 2. Их будет достаточно чтобы рассмотреть весь функционал микросервиса.
 ![image](https://user-images.githubusercontent.com/66581773/202797881-75f57223-294e-448e-902b-6ce2d5e56cdf.png)
 ![image](https://user-images.githubusercontent.com/66581773/202797943-2aeda114-648e-47be-b3aa-b2b2a1d09414.png)
-
 Теперь повторим тот же запрос для usera с id 1 его баланс увеличивается в задании.
 ![image](https://user-images.githubusercontent.com/66581773/202797912-e4c57066-1fe4-47d9-9962-c1abdd38bb2e.png)
 Снятие денег со счета usera c id 1
