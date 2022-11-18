@@ -1,0 +1,249 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Microservice for working with user balance",
+        "title": "AvitoTask",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/": {
+            "post": {
+                "description": "Returns the current balance of the selected user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance Interaction"
+                ],
+                "summary": "Returns the current balance of the selected user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка заполнения JSON"
+                    }
+                }
+            }
+        },
+        "/deposit": {
+            "post": {
+                "description": "Deposit Balance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance Interaction"
+                ],
+                "summary": "Deposit Balance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка заполнения JSON"
+                    }
+                }
+            }
+        },
+        "/history": {
+            "post": {
+                "description": "Shows all balance history for selected user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance Interaction"
+                ],
+                "summary": "History Balance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/users.GetHistoryBalanceBodyRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка заполнения JSON"
+                    },
+                    "404": {
+                        "description": "Данные за введенный период не найдены"
+                    }
+                }
+            }
+        },
+        "/reserve": {
+            "post": {
+                "description": "Reserve balance amount for transaction and after confirmation writes it off and transfers it to revenue",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance Interaction"
+                ],
+                "summary": "Reserve balance And Revenue Recognition",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка заполнения JSON"
+                    }
+                }
+            }
+        },
+        "/statement": {
+            "post": {
+                "description": "Сreate monthly revenue statement among services",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statements"
+                ],
+                "summary": "Create revenue statement",
+                "responses": {
+                    "200": {
+                        "description": "file.csv"
+                    },
+                    "400": {
+                        "description": "Ошибка заполнения JSON"
+                    }
+                }
+            }
+        },
+        "/transfer": {
+            "post": {
+                "description": "Transferring money between two selected users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance Interaction"
+                ],
+                "summary": "Transferring money",
+                "responses": {
+                    "200": {
+                        "description": "Перевод выполнен"
+                    },
+                    "400": {
+                        "description": "Ошибка заполнения JSON"
+                    }
+                }
+            }
+        },
+        "/withdraw": {
+            "post": {
+                "description": "Withdraw Balance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance Interaction"
+                ],
+                "summary": "Withdraw Balance",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка заполнения JSON"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "users.GetHistoryBalanceBodyRequest": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "order_by": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "sort_by": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "users.Paginator": {
+            "type": "object",
+            "properties": {
+                "history": {},
+                "limit": {
+                    "type": "integer"
+                },
+                "next_page": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "prev_page": {
+                    "type": "integer"
+                },
+                "total_page": {
+                    "type": "integer"
+                },
+                "total_record": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

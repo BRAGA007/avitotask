@@ -1,0 +1,164 @@
+basePath: /api/v1
+definitions:
+  models.User:
+    properties:
+      balance:
+        type: integer
+      id:
+        type: integer
+    type: object
+  users.GetHistoryBalanceBodyRequest:
+    properties:
+      limit:
+        type: integer
+      order_by:
+        type: string
+      page:
+        type: integer
+      sort_by:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  users.Paginator:
+    properties:
+      history: {}
+      limit:
+        type: integer
+      next_page:
+        type: integer
+      page:
+        type: integer
+      prev_page:
+        type: integer
+      total_page:
+        type: integer
+      total_record:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Microservice for working with user balance
+  title: AvitoTask
+  version: "1.0"
+paths:
+  /:
+    post:
+      consumes:
+      - application/json
+      description: Returns the current balance of the selected user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Ошибка заполнения JSON
+      summary: Returns the current balance of the selected user
+      tags:
+      - Balance Interaction
+  /deposit:
+    post:
+      consumes:
+      - application/json
+      description: Deposit Balance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Ошибка заполнения JSON
+      summary: Deposit Balance
+      tags:
+      - Balance Interaction
+  /history:
+    post:
+      consumes:
+      - application/json
+      description: Shows all balance history for selected user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/users.GetHistoryBalanceBodyRequest'
+        "400":
+          description: Ошибка заполнения JSON
+        "404":
+          description: Данные за введенный период не найдены
+      summary: History Balance
+      tags:
+      - Balance Interaction
+  /reserve:
+    post:
+      consumes:
+      - application/json
+      description: Reserve balance amount for transaction and after confirmation writes
+        it off and transfers it to revenue
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Ошибка заполнения JSON
+      summary: Reserve balance And Revenue Recognition
+      tags:
+      - Balance Interaction
+  /statement:
+    post:
+      consumes:
+      - application/json
+      description: Сreate monthly revenue statement among services
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: file.csv
+        "400":
+          description: Ошибка заполнения JSON
+      summary: Create revenue statement
+      tags:
+      - Statements
+  /transfer:
+    post:
+      consumes:
+      - application/json
+      description: Transferring money between two selected users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Перевод выполнен
+        "400":
+          description: Ошибка заполнения JSON
+      summary: Transferring money
+      tags:
+      - Balance Interaction
+  /withdraw:
+    post:
+      consumes:
+      - application/json
+      description: Withdraw Balance
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Ошибка заполнения JSON
+      summary: Withdraw Balance
+      tags:
+      - Balance Interaction
+swagger: "2.0"

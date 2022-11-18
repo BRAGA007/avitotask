@@ -10,6 +10,15 @@ type GetBalanceBodyRequest struct {
 	ID int `json:"user_id"`
 }
 
+// GetUser godoc
+// @Summary      Returns the current balance of the selected user
+// @Description  Returns the current balance of the selected user
+// @Tags         Balance Interaction
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.User
+// @Failure      400  "Ошибка заполнения JSON"
+// @Router       / [post]
 func (h handler) GetUser(c *gin.Context) {
 	body := GetBalanceBodyRequest{}
 

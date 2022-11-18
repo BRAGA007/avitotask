@@ -21,6 +21,14 @@ type Paginator struct {
 	TotalPage   int         `json:"total_page"`
 }
 
+// Paging godoc
+// @Summary      Pagination
+// @Description  Create pagination
+// @Tags         Pagination
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  Paginator
+// @Failure      400  "Ошибка заполнения JSON"
 func Paging(p *Param, result interface{}) *Paginator {
 	db := p.DB
 

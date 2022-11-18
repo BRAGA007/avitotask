@@ -12,6 +12,15 @@ type DepositBalanceRequestBody struct {
 	Deposit int `json:"deposit"`
 }
 
+// DepositBalance godoc
+// @Summary      Deposit Balance
+// @Description  Deposit Balance
+// @Tags         Balance Interaction
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.User
+// @Failure      400  "Ошибка заполнения JSON"
+// @Router       /deposit [post]
 func (h handler) DepositBalance(c *gin.Context) {
 
 	body := DepositBalanceRequestBody{}
@@ -27,6 +36,10 @@ func (h handler) DepositBalance(c *gin.Context) {
 
 	if body.Id <= 0 {
 		c.JSON(http.StatusBadRequest, "Введите ID больше 0")
+		return
+	}
+	if body.Deposit <= 0 {
+		c.JSON(http.StatusBadRequest, "Сумма пополнения длжна быть больше 0")
 		return
 	}
 

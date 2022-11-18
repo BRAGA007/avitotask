@@ -13,6 +13,15 @@ type TransferRequestBody struct {
 	Transfer int `json:"transfer"`
 }
 
+// Transfer godoc
+// @Summary      Transferring money
+// @Description  Transferring money between two selected users
+// @Tags         Balance Interaction
+// @Accept       json
+// @Produce      json
+// @Success      200  "Перевод выполнен"
+// @Failure      400  "Ошибка заполнения JSON"
+// @Router       /transfer [post]
 func (h handler) Transfer(c *gin.Context) {
 
 	body := TransferRequestBody{}
@@ -63,8 +72,7 @@ func (h handler) Transfer(c *gin.Context) {
 	transactionto.Description = "Получение: " + strconv.Itoa(body.Transfer) + " копеек " + "от пользователя с ID " + strconv.Itoa(body.IdFrom)
 	h.DB.Save(&userto)
 	h.DB.Save(&userfrom)
-	c.JSON(http.StatusOK, &userto)
-	c.JSON(http.StatusOK, &userfrom)
+	c.JSON(http.StatusOK, "Перевод выполнен")
 
 	h.DB.Save(&transactionto)
 	h.DB.Save(&transactionfrom)

@@ -14,6 +14,15 @@ type ReserveBalanceAndRevenueRecognitionRequestBody struct {
 	Cost      int `json:"cost"`
 }
 
+// ReserveBalanceAndRevenueRecognition godoc
+// @Summary      Reserve balance And Revenue Recognition
+// @Description  Reserve balance amount for transaction and after confirmation writes it off and transfers it to revenue
+// @Tags         Balance Interaction
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}   models.User
+// @Failure      400  "Ошибка заполнения JSON"
+// @Router       /reserve [post]
 func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
 
 	body := ReserveBalanceAndRevenueRecognitionRequestBody{}

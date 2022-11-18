@@ -18,6 +18,15 @@ type GetRevenueStatementRequestBody struct {
 	Month int `json:"month"`
 }
 
+// GetRevenueStatement godoc
+// @Summary      Create revenue statement
+// @Description  Сreate monthly revenue statement among services
+// @Tags         Statements
+// @Accept       json
+// @Produce      json
+// @Success      200  "file.csv"
+// @Failure      400  "Ошибка заполнения JSON"
+// @Router       /statement [post]
 func (h handler) GetRevenueStatement(c *gin.Context) {
 	body := GetRevenueStatementRequestBody{}
 
@@ -51,7 +60,5 @@ func (h handler) GetRevenueStatement(c *gin.Context) {
 
 	}
 	c.JSON(http.StatusOK, "pkg/revenues/"+strconv.Itoa(body.Year)+"-"+strconv.Itoa(body.Month)+".csv")
-
-	c.JSON(http.StatusOK, &statements)
 
 }

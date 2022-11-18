@@ -1,14 +1,14 @@
 package main
 
 import (
+	"avitotask/docs"
 	"avitotask/pkg/common/models"
 	"avitotask/pkg/users"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/spf13/viper"
 )
 
 func Database(DB_URL string) *gorm.DB {
@@ -20,7 +20,18 @@ func Database(DB_URL string) *gorm.DB {
 	return db
 }
 
+// @title       AvitoTask
+// @version     1.0
+// @host        localhost:8080
+// @BasePath    /api/v1
+// @description Microservice for working with user balance
+
 func main() {
+	docs.SwaggerInfo.Title = "AvitoTask"
+	docs.SwaggerInfo.Description = "Microservice for working with user balance"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.BasePath = "/api/v1"
 	viper.SetConfigFile("./pkg/common/envs/.env")
 	viper.ReadInConfig()
 

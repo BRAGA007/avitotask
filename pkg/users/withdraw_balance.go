@@ -12,6 +12,15 @@ type WithDrawBalanceRequestBody struct {
 	Withdrawal int `json:"withdrawal"`
 }
 
+// WithDrawBalance godoc
+// @Summary      Withdraw Balance
+// @Description  Withdraw Balance
+// @Tags         Balance Interaction
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.User
+// @Failure      400  "Ошибка заполнения JSON"
+// @Router       /withdraw [post]
 func (h handler) WithDrawBalance(c *gin.Context) {
 
 	body := WithDrawBalanceRequestBody{}
@@ -33,6 +42,10 @@ func (h handler) WithDrawBalance(c *gin.Context) {
 	}
 	if user.Balance < body.Withdrawal {
 		c.JSON(http.StatusBadRequest, "Недостаточно средств для вывода")
+		return
+	}
+	if body.Withdrawal <= 0 {
+		c.JSON(http.StatusBadRequest, "Сумма вывода должна быть больше нуля")
 		return
 	}
 

@@ -17,6 +17,16 @@ type TransactionResponse struct {
 	Description string `json:"description"`
 }
 
+// GetHistoryBalance godoc
+// @Summary      History Balance
+// @Description  Shows all balance history for selected user
+// @Tags         Balance Interaction
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}   GetHistoryBalanceBodyRequest
+// @Failure      400  "Ошибка заполнения JSON"
+// @Failure      404  "Данные за введенный период не найдены"
+// @Router       /history [post]
 func (h handler) GetHistoryBalance(c *gin.Context) {
 	body := GetHistoryBalanceBodyRequest{}
 
