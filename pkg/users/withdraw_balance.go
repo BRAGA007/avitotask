@@ -30,18 +30,16 @@ func (h handler) WithDrawBalance(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "Ошибка ввода данных")
 		return
 
-	} else {
-		if user.Balance >= body.Withdrawal {
-
-			user.Balance -= body.Withdrawal
-			transaction.User_id = body.Id
-			transaction.Description = "Вывод средств на сумму: " + strconv.Itoa(body.Withdrawal) + " копеек"
-		} else {
-			c.JSON(http.StatusBadRequest, "Недостаточно средств для вывода")
-			return
-		}
-
 	}
+	if user.Balance < body.Withdrawal {
+		c.JSON(http.StatusBadRequest, "Недостаточно средств для вывода")
+		return
+	}
+
+	user.Balance -= body.Withdrawal
+	transaction.UserId = body.Id
+	transaction.Description = "Вывод средств на сумму: " + strconv.Itoa(body.Withdrawal) + " копеек"
+	transaction.Amount = body.Withdrawal
 	h.DB.Save(&user)
 	h.DB.Save(&transaction)
 	c.JSON(http.StatusOK, &user)

@@ -8,8 +8,8 @@ import (
 )
 
 type TransferRequestBody struct {
-	Id_From  int `json:"id_from"`
-	Id_To    int `json:"id_to"`
+	IdFrom   int `json:"id_from"`
+	IdTo     int `json:"id_to"`
 	Transfer int `json:"transfer"`
 }
 
@@ -28,44 +28,44 @@ func (h handler) Transfer(c *gin.Context) {
 	var transactionto models.Transaction
 	var transactionfrom models.Transaction
 
-	if resultto := h.DB.First(&userto, body.Id_To); resultto.Error != nil {
+	if resultto := h.DB.First(&userto, body.IdTo); resultto.Error != nil {
 		c.AbortWithError(http.StatusBadRequest, resultto.Error)
 		c.JSON(http.StatusBadRequest, "Ошибка ввода данных")
 		return
 
 	}
-	if resultfrom := h.DB.First(&userfrom, body.Id_From); resultfrom.Error != nil {
+	if resultfrom := h.DB.First(&userfrom, body.IdFrom); resultfrom.Error != nil {
 		c.AbortWithError(http.StatusBadRequest, resultfrom.Error)
 		c.JSON(http.StatusBadRequest, "Ошибка ввода данных")
 		return
 
 	}
-	if body.Id_To != body.Id_From {
-		if userfrom.Balance >= body.Transfer {
-			if body.Transfer > 0 {
-				userto.Balance += body.Transfer
-				userfrom.Balance -= body.Transfer
-				transactionfrom.User_id = body.Id_From
-				transactionfrom.Description = "Отправлено: " + strconv.Itoa(body.Transfer) + " копеек " + "пользователю с ID " + strconv.Itoa(int(body.Id_To))
-				transactionto.User_id = body.Id_To
-				transactionto.Description = "Получение: " + strconv.Itoa(body.Transfer) + " копеек " + "от пользователя с ID " + strconv.Itoa(int(body.Id_From))
-				h.DB.Save(&userto)
-				h.DB.Save(&userfrom)
-				c.JSON(http.StatusOK, &userto)
-				c.JSON(http.StatusOK, &userfrom)
-
-				h.DB.Save(&transactionto)
-				h.DB.Save(&transactionfrom)
-			} else {
-				c.JSON(http.StatusBadRequest, "Сумма перевода не может быть меньши либо равна нулю")
-			}
-
-		} else {
-			c.JSON(http.StatusBadRequest, "Сумма перевода превышает баланс пользователя отправителя")
-			return
-		}
-	} else {
-		c.JSON(http.StatusBadRequest, "Нельзя переводить деньги самому себя")
+	if body.IdTo == body.IdFrom {
+		c.JSON(http.StatusBadRequest, "Нельзя переводить деньги самому себе")
 		return
 	}
+	if userfrom.Balance < body.Transfer {
+		c.JSON(http.StatusBadRequest, "Сумма перевода превышает баланс пользователя отправителя")
+		return
+	}
+
+	if body.Transfer < +0 {
+		c.JSON(http.StatusBadRequest, "Сумма перевода не может быть меньши либо равна нулю")
+		return
+	}
+	userto.Balance += body.Transfer
+	userfrom.Balance -= body.Transfer
+	transactionfrom.Amount = body.Transfer
+	transactionfrom.UserId = body.IdFrom
+	transactionfrom.Description = "Отправлено: " + strconv.Itoa(body.Transfer) + " копеек " + "пользователю с ID " + strconv.Itoa(body.IdTo)
+	transactionto.Amount = body.Transfer
+	transactionto.UserId = body.IdTo
+	transactionto.Description = "Получение: " + strconv.Itoa(body.Transfer) + " копеек " + "от пользователя с ID " + strconv.Itoa(body.IdFrom)
+	h.DB.Save(&userto)
+	h.DB.Save(&userfrom)
+	c.JSON(http.StatusOK, &userto)
+	c.JSON(http.StatusOK, &userfrom)
+
+	h.DB.Save(&transactionto)
+	h.DB.Save(&transactionfrom)
 }

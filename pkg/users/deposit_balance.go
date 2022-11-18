@@ -2,7 +2,6 @@ package users
 
 import (
 	"avitotask/pkg/common/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -26,24 +25,17 @@ func (h handler) DepositBalance(c *gin.Context) {
 	var user models.User
 	var transaction models.Transaction
 
-	if result := h.DB.First(&user, body.Id); result.Error != nil {
-		if body.Id > 0 {
-			user.Balance = body.Deposit
-			user.ID = body.Id
-			transaction.User_id = body.Id
-			transaction.Description = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
-
-			fmt.Println(body.Deposit)
-		} else {
-			c.JSON(http.StatusBadRequest, "Введите ID больше 0")
-			return
-		}
-	} else {
-		user.Balance += body.Deposit
-		transaction.User_id = body.Id
-		transaction.Description = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
-		fmt.Println(body.Deposit)
+	if body.Id <= 0 {
+		c.JSON(http.StatusBadRequest, "Введите ID больше 0")
+		return
 	}
+
+	_ = h.DB.First(&user, body.Id)
+	user.ID = body.Id
+	user.Balance += body.Deposit
+	transaction.UserId = body.Id
+	transaction.Description = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
+	transaction.Amount = body.Deposit
 	h.DB.Save(&user)
 	h.DB.Save(&transaction)
 	c.JSON(http.StatusOK, &user)

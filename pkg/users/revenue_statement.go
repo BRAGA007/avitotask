@@ -10,8 +10,8 @@ import (
 )
 
 type Statement struct {
-	Service_id int
-	Total      int
+	ServiceId int
+	Total     int
 }
 type GetRevenueStatementRequestBody struct {
 	Year  int `json:"year"`
@@ -46,7 +46,7 @@ func (h handler) GetRevenueStatement(c *gin.Context) {
 
 	for _, s := range statements {
 		var csvRow []string
-		csvRow = append(csvRow, "Название услуги: "+strconv.Itoa(s.Service_id)+";Общая сумма выручки за отчетный период "+strconv.Itoa(s.Total))
+		csvRow = append(csvRow, "Название услуги: "+strconv.Itoa(s.ServiceId)+";Общая сумма выручки за отчетный период "+strconv.Itoa(s.Total)+" копеек")
 		writer.Write(csvRow)
 
 	}

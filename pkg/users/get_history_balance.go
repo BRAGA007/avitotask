@@ -1,19 +1,19 @@
 package users
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
 )
 
 type GetHistoryBalanceBodyRequest struct {
-	User_id  int    `json:"user_id"`
-	Sort_by  string `json:"sort_by"`
-	Order_by string `json:"order_by"`
+	UserId  int    `json:"user_id"`
+	SortBy  string `json:"sort_by"`
+	OrderBy string `json:"order_by"`
+	Page    int    `json:"page"`
+	Limit   int    `json:"limit"`
 }
 type TransactionResponse struct {
-	Created_at  string `json:"date"`
+	CreatedAt   string `json:"date"`
 	Description string `json:"description"`
 }
 
@@ -25,38 +25,42 @@ func (h handler) GetHistoryBalance(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "Ошибка заполнения JSON")
 		return
 	}
+	if body.UserId <= 0 {
+		c.JSON(http.StatusBadRequest, "Введите ID пользователя больше нуля")
+		return
+	}
 
-	available_request_sort_body := []string{"created_at", "amount"}
-	available_request_order_body := []string{"asc", "desc"}
-	order_body := []string{body.Order_by}
-	sort_body := []string{body.Sort_by}
+	available_request_sort_body := map[string]struct{}{"created_at": {}, "amount": {}}
+	available_request_order_body := map[string]struct{}{"asc": {}, "desc": {}}
 
-	if CheckSortData(available_request_sort_body, sort_body) && CheckSortData(available_request_order_body, order_body) {
-		order_by := body.Sort_by + " " + body.Order_by
+	_, isSortByValid := available_request_sort_body[body.SortBy]
+	_, isOrderByValid := available_request_order_body[body.OrderBy]
+	if (isSortByValid && (len(body.OrderBy) == 0 || isOrderByValid)) || len(body.SortBy+body.OrderBy) == 0 {
+		order_by := body.SortBy + " " + body.OrderBy
+		if len(body.SortBy) != 0 && len(body.OrderBy) == 0 {
+			order_by = body.SortBy
+		}
+		if len(body.SortBy) == 0 && len(body.OrderBy) == 0 {
+			order_by = ""
+		}
 
 		var transactionResponse []TransactionResponse
-		if result := h.DB.Table("transactions").Select("description, DATE_FORMAT(created_at, '%Y-%m-%d %h:%m:%s') as created_at").Where("user_id = ?", body.User_id).Order(order_by).Scan(&transactionResponse); result.Error != nil {
+		if result := h.DB.Table("transactions").Select("description, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as created_at").Where("user_id = ?", body.UserId).Order(order_by).Scan(&transactionResponse); result.Error != nil {
 			c.AbortWithError(http.StatusNotFound, result.Error)
 			c.JSON(http.StatusBadRequest, "Данные за введенный период не найдены")
 			return
 		}
-		c.JSON(http.StatusOK, "История баланса пользователя с ID: "+strconv.Itoa(body.User_id))
-		c.JSON(http.StatusOK, &transactionResponse)
+		if body.Limit == 0 {
+			body.Limit = 5
+		}
+
+		paginator := Paging(&Param{
+			DB:    h.DB.Table("transactions").Select("description, DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as created_at").Where("User_id = ?", body.UserId).Order(order_by).Scan(&transactionResponse),
+			Page:  body.Page,
+			Limit: body.Limit,
+		}, &transactionResponse)
+		c.JSON(http.StatusOK, &paginator)
 	} else {
 		c.JSON(http.StatusBadRequest, "Данные сортировки введены неправильно")
 	}
-}
-func CheckSortData(available_request_body, request_body []string) bool {
-	flag := false
-	for _, body := range request_body {
-		flag = false
-		for _, available := range available_request_body {
-			fmt.Println(body, available)
-			if body == available {
-				flag = true
-			}
-		}
-	}
-	fmt.Println(flag)
-	return flag
 }
