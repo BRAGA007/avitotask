@@ -11,12 +11,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Database(DB_URL string) *gorm.DB {
-	//open a database connection
-	db, err := gorm.Open("mysql", DB_URL)
+func Database(DBURL string) *gorm.DB {
+	fmt.Println(DBURL)
+	db, err := gorm.Open("mysql", DBURL)
 	if err != nil {
-		panic("failed to connect database")
+		fmt.Println(DBURL)
+
 	}
+	db.AutoMigrate(&models.User{}, &models.Transaction{}, &models.Reservation{}, &models.Revenue{})
 	return db
 }
 
@@ -39,9 +41,10 @@ func main() {
 	DB_NAME := viper.Get("DB_NAME").(string)
 	DB_PASSWORD := viper.Get("DB_PASSWORD").(string)
 	DB_PORT := viper.Get("DB_PORT").(string)
-	DB_URL := DB_USER + ":" + DB_PASSWORD + "@tcp(127.0.0.1:" + DB_PORT + ")/" + DB_NAME
-	fmt.Println(DB_URL)
-	db := Database(DB_URL)
+	DB_HOST := viper.Get("DB_HOST").(string)
+	//DB_URL := DB_USER + ":" + DB_PASSWORD + "@tcp(127.0.0.1:" + DB_PORT + ")/" + DB_NAME
+	DBURL := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
+	db := Database(DBURL)
 	db.AutoMigrate(&models.User{}, &models.Transaction{}, &models.Reservation{}, &models.Revenue{})
 	router := gin.Default()
 

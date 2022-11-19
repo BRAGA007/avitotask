@@ -47,7 +47,7 @@ func (h handler) DepositBalance(c *gin.Context) {
 	user.ID = body.Id
 	user.Balance += body.Deposit
 	transaction.UserId = body.Id
-	transaction.Description = "Пополнение баланса на сумму: " + strconv.Itoa(body.Deposit) + " копеек"
+	transaction.Description = "Replenishment of the balance in the amount of:" + strconv.Itoa(body.Deposit) + " kopecks"
 	transaction.Amount = body.Deposit
 	h.DB.Save(&user)
 	h.DB.Save(&transaction)

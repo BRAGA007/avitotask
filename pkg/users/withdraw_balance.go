@@ -51,7 +51,7 @@ func (h handler) WithDrawBalance(c *gin.Context) {
 
 	user.Balance -= body.Withdrawal
 	transaction.UserId = body.Id
-	transaction.Description = "Вывод средств на сумму: " + strconv.Itoa(body.Withdrawal) + " копеек"
+	transaction.Description = "Withdrawal of funds in the amount of: " + strconv.Itoa(body.Withdrawal) + " kopecks"
 	transaction.Amount = body.Withdrawal
 	h.DB.Save(&user)
 	h.DB.Save(&transaction)

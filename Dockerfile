@@ -1,16 +1,22 @@
-FROM golang:1.19
+FROM golang:alpine as builder
+RUN apk update && apk add --no-cache git
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
 
-# WORKDIR /usr/src/avito-user-balance
-ENV GOPATH=/
+COPY . .
 
-# pre-copy/cache go.mod for pre-downloading dependencies and only redownloading them in subsequent builds if they change
-# COPY go.mod ./
-COPY ./ ./
-RUN go mod download && go mod tidy && go mod verify && go get github.com/jinzhu/gorm && go get github.com/jinzhu/gorm/dialects/mysql
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
 
-# RUN ls /usr/local/go/src/avito-user-balance/
-# RUN echo $GOROOT
-# RUN go mod download
-RUN go build -o avito-app ./cmd/main.go
 
-CMD ["./avito-app"]
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /root/
+
+COPY --from=builder /app/main .
+COPY --from=builder /app/.env .
+
+EXPOSE 8080
+
+CMD ["./main"]

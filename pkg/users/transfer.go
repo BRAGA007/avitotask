@@ -66,10 +66,10 @@ func (h handler) Transfer(c *gin.Context) {
 	userfrom.Balance -= body.Transfer
 	transactionfrom.Amount = body.Transfer
 	transactionfrom.UserId = body.IdFrom
-	transactionfrom.Description = "Отправлено: " + strconv.Itoa(body.Transfer) + " копеек " + "пользователю с ID " + strconv.Itoa(body.IdTo)
+	transactionfrom.Description = "Sent: " + strconv.Itoa(body.Transfer) + " kopecks " + "to user with ID " + strconv.Itoa(body.IdTo)
 	transactionto.Amount = body.Transfer
 	transactionto.UserId = body.IdTo
-	transactionto.Description = "Получение: " + strconv.Itoa(body.Transfer) + " копеек " + "от пользователя с ID " + strconv.Itoa(body.IdFrom)
+	transactionto.Description = "Receiving: " + strconv.Itoa(body.Transfer) + "  kopecks " + "from user with ID " + strconv.Itoa(body.IdFrom)
 	h.DB.Save(&userto)
 	h.DB.Save(&userfrom)
 	c.JSON(http.StatusOK, "Перевод выполнен")

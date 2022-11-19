@@ -1,23 +1,40 @@
 version: '3'
 services:
-  db:
-    image: mysql/mysql-server:5.7
-    ports:
-      - 3305:3306
-    environment:
-      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
-      - "MYSQL_USER=${DB_USER}"
-      - "MYSQL_PASSWORD=${DB_PASSWORD}"
-      - "MYSQL_DATABASE=${DB_NAME}"
-    volumes:
-      - ./resources/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-  web:
+  app:
+    container_name: web_app
     build: .
     ports:
-      - "8080:8080"
+      - 8080:8080
+    restart: on-failure
     volumes:
-      - ./resources/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - api:/usr/src/app/
     depends_on:
-      - db
-    links:
-      - "db:database"
+      - dbmysql
+    networks:
+      - net
+
+  dbmysql:
+    image: mysql:5.7
+    container_name: dbmysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_HOST=${DB_HOST}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - net
+
+
+
+volumes:
+  api:
+  db:
+
+networks:
+  net:
+    driver: bridge
