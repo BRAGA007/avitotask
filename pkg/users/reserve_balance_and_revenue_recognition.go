@@ -52,7 +52,7 @@ func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
 		reservation.ServiceId = body.ServiceId
 		reservation.OrderId = body.OrderId
 		reservation.Cost = body.Cost
-		reservation.Status = "Заказ не подтвержден"
+		reservation.Status = "not confirmed"
 		h.DB.Save(&reservation)
 		c.JSON(http.StatusOK, &user)
 		return
@@ -62,7 +62,7 @@ func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "Данный заказ принадлежит другому пользователю")
 		return
 	}
-	if reservation.Status == "Заказ подтвержден" {
+	if reservation.Status == "approved" {
 		c.JSON(http.StatusBadRequest, "Невозможно подтвердить уже оплаченный заказ")
 		return
 	}
@@ -81,7 +81,7 @@ func (h handler) ReserveBalanceAndRevenueRecognition(c *gin.Context) {
 	}
 	user.Balance -= reservation.Cost
 	h.DB.Save(&user)
-	reservation.Status = "Заказ подтвержден"
+	reservation.Status = "approved"
 	h.DB.Save(&reservation)
 	transaction.UserId = reservation.UserId
 	transaction.Description = "Order confirmation: " + strconv.Itoa(reservation.OrderId) + " for the amount of " + strconv.Itoa(reservation.Cost) + " kopecks"
