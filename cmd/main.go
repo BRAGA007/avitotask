@@ -15,8 +15,7 @@ func Database(DBURL string) *gorm.DB {
 	fmt.Println(DBURL)
 	db, err := gorm.Open("mysql", DBURL)
 	if err != nil {
-		fmt.Println(DBURL)
-
+		panic("failed to connect database")
 	}
 	db.AutoMigrate(&models.User{}, &models.Transaction{}, &models.Reservation{}, &models.Revenue{})
 	return db
